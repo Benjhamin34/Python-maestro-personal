@@ -1,20 +1,44 @@
-# 1. menu de opciones
+# Mostrar el menu
+
+
 print("1. Agregar producto")
 print("2. Eliminar producto")
 print("3. Ver inventario")
 print("4. Salir")
-opcion = input("Seleccione una opción: ")
+
+opcion = int(input("Seleccione una opción: "))
+inventario = []
+#Iniciar un bucle para el menu
+
 while opcion != 4:
-    productos = []
-    if opcion == "1":
-        producto = input("Agrege un producto: ")
-        productos.append(producto)
+
+    if opcion == 1:
+        producto = input("Ingrese el nombre del producto: ")
+        inventario.append(producto)
         print(f"Producto '{producto}' agregado al inventario.")
-    elif opcion == "2":
-        producto = input("elimine un producto: ")
-        if producto in productos:
-            productos.remove(producto)
+        print("1. Agregar producto")
+        print("2. Eliminar producto")
+        print("3. Ver inventario")
+        print("4. Salir")
+        opcion = int(input("Seleccione una opción: "))
+    elif opcion == 2:
+        producto = input("Ingrese el nombre del producto a eliminar: ")
+        if producto in inventario:
+            inventario.remove(producto)
             print(f"Producto '{producto}' eliminado del inventario.")
-    elif opcion == "3":
-        print("Inventario actual:", productos)
-    opcion = input("Seleccione una opción: ")
+        else:
+            print(f"Producto '{producto}' no encontrado en el inventario.")
+        print("1. Agregar producto")
+        print("2. Eliminar producto")
+        print("3. Ver inventario")
+        print("4. Salir")
+        opcion = int(input("Seleccione una opción: "))
+    elif opcion == 3:
+        print("Inventario actual:", inventario)
+
+        print("1. Agregar producto")
+        print("2. Eliminar producto")
+        print("3. Ver inventario")
+        print("4. Salir")
+        opcion = int(input("Seleccione una opción: "))
+
