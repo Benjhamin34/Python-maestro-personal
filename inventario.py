@@ -1,3 +1,4 @@
+import json
 def mostrar_menu():
     print("1. Agregar producto")
     print("2. Eliminar producto")
@@ -7,6 +8,11 @@ def mostrar_menu():
 
 inventario = {}
 opcion = 0
+try:
+    with open("Inventario.json", "r") as archivo:
+        inventario = json.load(archivo)
+except FileNotFoundError:
+    inventario = {}
 
 while opcion != 5:
     mostrar_menu()
@@ -40,4 +46,8 @@ while opcion != 5:
     elif opcion != 5:
         print("Opción no válida. Por favor, intente de nuevo.")
 
+
 print("Gracias por usar el inventario. ¡Hasta luego!")
+with open("inventario.json", "w") as archivo:
+    json.dump(inventario, archivo)
+print("Inventario guardado en 'inventario.json'.")
