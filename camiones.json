@@ -1,0 +1,10 @@
+{
+    "ABC-123": {
+        "marca": "VOLVO",
+        "modelo": "FHG",
+        "anio": 2022,
+        "propietario": "BENJHAMIN",
+        "placa": "ABC-123",
+        "kilometraje": 2000
+    }
+}
