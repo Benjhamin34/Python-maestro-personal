@@ -4,7 +4,26 @@
         "modelo": "FHG",
         "anio": 2022,
         "propietario": "BENJHAMIN",
+        "chofer": "EDUARDO V.",
         "placa": "ABC-123",
-        "kilometraje": 2000
+        "kilometraje": 2000,
+        "reparaciones": [
+            {
+                "descripcion": "Mantenimiento general y cambio de aceite",
+                "costo": 2000.0,
+                "estado": "En revision",
+                "fecha": "2025-08-07 11:28:38"
+            }
+        ]
+    },
+    "WDC-123": {
+        "marca": "SCANIA",
+        "modelo": "12H3",
+        "anio": 2021,
+        "propietario": "DANIEL RAMOS R.",
+        "chofer": "Desconocido",
+        "placa": "WDC-123",
+        "kilometraje": 23000,
+        "reparaciones": []
     }
 }
