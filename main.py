@@ -8,7 +8,8 @@ def mostrar_menu():
     print("4. Actualizar inventario")
     print("5. Registrar Reparación")
     print("6. Actualizar Reparación")
-    print("7. Salir")
+    print("7. Buscar camion por placa")
+    print("8. Salir")
 
 Camiones_del_taller = {}
 opcion = 0
@@ -30,7 +31,7 @@ except FileNotFoundError:
 except json.JSONDecodeError:
     print("Error al leer el archivo JSON.")
 
-while opcion != 7:
+while opcion != 8:
     try:
         mostrar_menu()
         opcion = int(input("Seleccione una opción: "))
@@ -126,7 +127,16 @@ while opcion != 7:
                 print("Por favor, ingrese un número válido.")
         else:
             print(f"No se encontró un camion con la placa {placa}.")
-    elif opcion != 7:
+    elif opcion == 7:
+        placa_busqueda = input("Ingrese la placa del camion a buscar: ")
+        if placa_busqueda in Camiones_del_taller:
+            print("--- Camión Encontrado ---")
+            camion_encontrado = Camiones_del_taller[placa_busqueda]
+            camion_encontrado.mostrar_info()
+            print("-----------------------")
+        else:
+            print(f"No se encontró un camion con la placa {placa_busqueda}.")
+    elif opcion != 8:
         print("Opción no válida. Por favor, intente de nuevo.")
 
 
