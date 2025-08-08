@@ -25,5 +25,38 @@
         "placa": "WDC-123",
         "kilometraje": 23000,
         "reparaciones": []
+    },
+    "ADC-34": {
+        "marca": "SCANIA",
+        "modelo": "DD22",
+        "anio": 2022,
+        "propietario": "BENJHAMIN COCA GALARZA",
+        "chofer": "MARTIN L.",
+        "placa": "ADC-34",
+        "kilometraje": 23000,
+        "reparaciones": []
+    },
+    "ADC-123": {
+        "marca": "SCANIA",
+        "modelo": "SCANIA",
+        "anio": 2022,
+        "propietario": "BENJHAMIN COCA GALARZA",
+        "chofer": "MARTIN",
+        "placa": "ADC-123",
+        "kilometraje": 23000,
+        "reparaciones": [
+            {
+                "descripcion": "CAMBIO DE ACEITE",
+                "costo": 2000.0,
+                "estado": "Pendiente",
+                "fecha": "2025-08-08 16:15:06"
+            },
+            {
+                "descripcion": "MANTENIMIENTO GENERAL DE FRENOS ",
+                "costo": 1000.0,
+                "estado": "Pendiente",
+                "fecha": "2025-08-08 16:26:51"
+            }
+        ]
     }
 }
