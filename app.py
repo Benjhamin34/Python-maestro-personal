@@ -45,7 +45,7 @@ def registrar_camion():
 
     return jsonify({"mensaje": f"Camión {placa} registrado exitosamente"}), 201
 
-# --- NUEVAS RUTAS AÑADIDAS HOY ---
+# --- RUTAS QUE TRABAJAN CON UN SOLO CAMIÓN POR PLACA ---
 
 # RUTA PARA OBTENER UN SOLO CAMIÓN POR PLACA
 @app.route('/camiones/<string:placa>', methods=['GET'])
@@ -90,6 +90,32 @@ def actualizar_camion(placa):
 
     return jsonify({"mensaje": f"Camión con placa {placa} actualizado exitosamente"}), 200
 
+# --- RUTA PARA REPARACIONES ---
+
+# RUTA PARA REGISTRAR UNA NUEVA REPARACIÓN EN UN CAMIÓN ESPECÍFICO
+@app.route('/camiones/<string:placa>/reparaciones', methods=['POST'])
+def registrar_reparacion(placa):
+    datos_reparacion = request.get_json()
+    if not datos_reparacion:
+        return jsonify({"error": "No se recibieron datos"}), 400
+
+    camion = camiones_del_taller.get(placa)
+    if not camion:
+        return jsonify({"error": f"No se encontró un camión con la placa {placa}"}), 404
+
+    descripcion = datos_reparacion.get('descripcion')
+    costo = datos_reparacion.get('costo')
+
+    if not all([descripcion, costo]):
+        return jsonify({"error": "Faltan datos obligatorios (descripcion, costo)"}), 400
+
+    nueva_reparacion = Reparacion(descripcion, costo)
+    camion.reparaciones.append(nueva_reparacion)
+    guardar_inventario(camiones_del_taller)
+
+    return jsonify({"mensaje": f"Reparación para el camión {placa} registrada exitosamente"}), 201
+
 
 if __name__ == '__main__':
     app.run(debug=True)
+

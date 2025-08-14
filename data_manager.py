@@ -1,42 +1,47 @@
-# data_manager.py
 import json
 from camion import Camion, Reparacion
 
-def cargar_inventario(nombre_archivo="camiones.json"):
-    """
-    Carga el inventario de camiones desde un archivo JSON.
-    """
-    inventario = {}
+# Nombre del archivo JSON para guardar los datos
+INVENTARIO_FILE = 'camiones.json'
+
+def cargar_inventario():
+    """Carga los datos de los camiones y sus reparaciones desde el archivo JSON."""
     try:
-        with open(nombre_archivo, 'r') as archivo:
-            datos_cargados = json.load(archivo)
-            for placa, datos in datos_cargados.items():
-                reparaciones_dict = datos.pop('reparaciones', [])
-                reparaciones_obj = [Reparacion(**rep) for rep in reparaciones_dict]
-                
-                if 'chofer' not in datos:
-                    datos['chofer'] = 'Desconocido'
-                
-                camion_obj = Camion(**datos, reparaciones=reparaciones_obj)
-                inventario[placa] = camion_obj
-    except FileNotFoundError:
-        print(f"El archivo '{nombre_archivo}' no fue encontrado. Se creará uno nuevo.")
-    except json.JSONDecodeError:
-        print(f"Error al leer el archivo '{nombre_archivo}'. El archivo está corrupto.")
-    return inventario
+        with open(INVENTARIO_FILE, 'r') as f:
+            data = json.load(f)
+            camiones = {}
+            for placa, camion_data in data.items():
+                # Obtenemos la lista de diccionarios de reparaciones del JSON
+                reparaciones_dicts = camion_data.get('reparaciones', [])
 
-def guardar_inventario(inventario, nombre_archivo="camiones.json"):
-    """
-    Guarda el inventario de camiones en un archivo JSON.
-    """
-    datos_a_guardar = {placa: camion.to_dict() for placa, camion in inventario.items()}
-    with open(nombre_archivo, 'w') as archivo:
-        json.dump(datos_a_guardar, archivo, indent=4)
-    print(f"Inventario guardado en '{nombre_archivo}'.")
+                # Corregimos el error: creamos un diccionario temporal con solo los campos
+                # que la clase Reparacion espera.
+                reparaciones_obj = []
+                for rep_dict in reparaciones_dicts:
+                    reparaciones_obj.append(Reparacion(
+                        descripcion=rep_dict.get('descripcion'),
+                        costo=rep_dict.get('costo'),
+                        fecha=rep_dict.get('fecha')
+                    ))
 
-def calcular_costo_total(inventario):
-    """
-    Calcula el costo total de todas las reparaciones en el inventario.
-    """
-    costo_total = sum(rep.costo for camion in inventario.values() for rep in camion.reparaciones)
-    return costo_total
+                camiones[placa] = Camion(
+                    marca=camion_data.get('marca'),
+                    modelo=camion_data.get('modelo'),
+                    anio=camion_data.get('anio'),
+                    propietario=camion_data.get('propietario'),
+                    chofer=camion_data.get('chofer'),
+                    placa=placa,
+                    kilometraje=camion_data.get('kilometraje'),
+                    reparaciones=reparaciones_obj
+                )
+            return camiones
+    except (FileNotFoundError, json.JSONDecodeError) as e:
+        print(f"Error al cargar el inventario: {e}. Se iniciará con un inventario vacío.")
+        return {}
+
+def guardar_inventario(camiones):
+    """Guarda el inventario de camiones en el archivo JSON."""
+    with open(INVENTARIO_FILE, 'w') as f:
+        # Serializamos los objetos Camion a diccionarios para poder guardarlos en JSON
+        data_to_save = {placa: camion.to_dict() for placa, camion in camiones.items()}
+        json.dump(data_to_save, f, indent=4)
