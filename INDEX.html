@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Taller Heavy Duty | Panel de Control</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        /* Estilo base para el cuerpo */
+        body {
+            font-family: 'Roboto Mono', monospace;
+            background-color: #041E42; /* Fondo Azul Scania */
+            color: #FFFFFF; /* Letras Blancas */
+        }
+        
+        /* Estilo de los paneles con efecto "glassmorphism" */
+        .glass-panel {
+            background-color: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Estilo para los botones principales */
+        .btn-primary {
+            transition: transform 0.2s ease-in-out, background-color 0.2s ease-in-out;
+            background-color: #0d1117;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            background-color: #1a2233;
+        }
+
+        /* Estilo para el modal */
+        .modal {
+            display: none; /* Oculto por defecto */
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(5px);
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background-color: #041E42;
+            padding: 2rem;
+            border-radius: 1rem;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+        }
+
+        .close-btn {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close-btn:hover,
+        .close-btn:focus {
+            color: #fff;
+            text-decoration: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body class="bg-blue-900 text-white min-h-screen flex flex-col">
+
+    <!-- Header -->
+    <header class="py-6 px-4 md:px-8 border-b border-gray-700">
+        <div class="flex justify-between items-center">
+            <h1 class="text-3xl font-bold tracking-wider text-white">TALLER HEAVY DUTY</h1>
+            <nav class="space-x-4">
+                <a href="#" class="text-gray-400 hover:text-white transition-colors">Camiones</a>
+                <a href="#" class="text-gray-400 hover:text-white transition-colors">Reparaciones</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto mt-10 p-4 md:p-8 flex-grow">
+        <div class="flex justify-between items-center mb-8">
+            <h2 class="text-2xl md:text-3xl font-bold text-white">Panel de Control de Camiones</h2>
+            <button id="addTruckBtn" class="btn-primary text-white font-bold py-2 px-6 rounded-lg shadow-lg">
+                + Nuevo Camión
+            </button>
+        </div>
+
+        <!-- Lista de Camiones -->
+        <div id="trucksList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <p class="text-center text-gray-400 col-span-full" id="loadingMessage">Cargando camiones...</p>
+        </div>
+    </main>
+
+    <!-- Modal para Agregar Camión -->
+    <div id="addTruckModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn">&times;</span>
+            <h3 class="text-2xl font-bold mb-6">Registrar Nuevo Camión</h3>
+            <form id="addTruckForm" class="space-y-4">
+                <div>
+                    <label for="placa" class="block text-sm font-bold mb-1">Placa</label>
+                    <input type="text" id="placa" name="placa" class="w-full p-2 bg-gray-800 border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                </div>
+                <div>
+                    <label for="marca" class="block text-sm font-bold mb-1">Marca</label>
+                    <input type="text" id="marca" name="marca" class="w-full p-2 bg-gray-800 border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                </div>
+                <div>
+                    <label for="modelo" class="block text-sm font-bold mb-1">Modelo</label>
+                    <input type="text" id="modelo" name="modelo" class="w-full p-2 bg-gray-800 border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                </div>
+                <div>
+                    <label for="anio" class="block text-sm font-bold mb-1">Año</label>
+                    <input type="number" id="anio" name="anio" class="w-full p-2 bg-gray-800 border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                </div>
+                <div>
+                    <label for="propietario" class="block text-sm font-bold mb-1">Propietario</label>
+                    <input type="text" id="propietario" name="propietario" class="w-full p-2 bg-gray-800 border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                </div>
+                <div>
+                    <label for="chofer" class="block text-sm font-bold mb-1">Chofer</label>
+                    <input type="text" id="chofer" name="chofer" class="w-full p-2 bg-gray-800 border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                </div>
+                <div>
+                    <label for="kilometraje" class="block text-sm font-bold mb-1">Kilometraje</label>
+                    <input type="number" id="kilometraje" name="kilometraje" class="w-full p-2 bg-gray-800 border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                </div>
+                <div class="mt-6 text-right">
+                    <button type="submit" class="btn-primary text-white font-bold py-2 px-6 rounded-lg shadow-lg">Registrar</button>
+                </div>
+            </form>
+            <p id="formMessage" class="mt-4 text-center"></p>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="py-4 px-8 mt-10 border-t border-gray-700 text-center text-gray-400">
+        &copy; 2024 Taller Heavy Duty. Todos los derechos reservados.
+    </footer>
+
+    <!-- JavaScript para la interacción con la API -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const trucksListContainer = document.getElementById('trucksList');
+            const loadingMessage = document.getElementById('loadingMessage');
+            const addTruckBtn = document.getElementById('addTruckBtn');
+            const addTruckModal = document.getElementById('addTruckModal');
+            const closeModalBtn = document.querySelector('.close-btn');
+            const addTruckForm = document.getElementById('addTruckForm');
+            const formMessage = document.getElementById('formMessage');
+
+            // Función para obtener los camiones de la API
+            const fetchTrucks = async () => {
+                loadingMessage.textContent = 'Cargando camiones...';
+                try {
+                    console.log('Fetching trucks from API...');
+                    const response = await fetch('http://127.0.0.1:5000/camiones');
+                    if (!response.ok) {
+                        throw new Error(`Error en la petición: ${response.statusText}`);
+                    }
+                    const camiones = await response.json();
+                    console.log('Trucks fetched successfully:', camiones);
+                    displayTrucks(camiones);
+                } catch (error) {
+                    loadingMessage.textContent = 'Error al cargar los camiones. Asegúrese de que el servidor está funcionando.';
+                    console.error('Error fetching trucks:', error);
+                }
+            };
+
+            // Función para renderizar las tarjetas de camiones
+            const displayTrucks = (camiones) => {
+                trucksListContainer.innerHTML = ''; // Limpiar la lista
+                if (camiones.length === 0) {
+                    trucksListContainer.innerHTML = '<p class="text-center text-gray-400 col-span-full">No hay camiones registrados.</p>';
+                } else {
+                    camiones.forEach(camion => {
+                        const truckCard = document.createElement('div');
+                        truckCard.className = 'glass-panel p-6';
+                        truckCard.innerHTML = `
+                            <div class="flex justify-between items-start mb-4">
+                                <h3 class="text-xl font-bold text-white">PLACA: ${camion.placa}</h3>
+                                <div class="space-x-2">
+                                    <button class="text-white hover:text-cyan-400 transition-colors">
+                                        <!-- Icono de Edición -->
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232a2 2 0 012.536 0L19 6.232a2 2 0 010 2.536l-8 8a2 2 0 01-1.414.586H6.5a.5.5 0 01-.5-.5v-4a.5.5 0 01.5-.5h2.586a2 2 0 011.414-.586l8-8z" />
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 19H7a2 2 0 01-2-2v-10a2 2 0 012-2h2" />
+                                        </svg>
+                                    </button>
+                                    <button class="text-red-400 hover:text-red-600 transition-colors">
+                                        <!-- Icono de Eliminar -->
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="text-gray-300 text-sm space-y-2">
+                                <p><strong>Marca:</strong> ${camion.marca}</p>
+                                <p><strong>Modelo:</strong> ${camion.modelo}</p>
+                                <p><strong>Propietario:</strong> ${camion.propietario}</p>
+                                <p><strong>Kilometraje:</strong> ${camion.kilometraje} Km</p>
+                                <p><strong>Reparaciones:</strong> ${camion.reparaciones.length}</p>
+                            </div>
+                            <div class="mt-4 text-right">
+                                <a href="#" class="text-white hover:underline">Ver detalles</a>
+                            </div>
+                        `;
+                        trucksListContainer.appendChild(truckCard);
+                    });
+                }
+            };
+            
+            // Lógica del Modal
+            addTruckBtn.onclick = () => {
+                addTruckModal.style.display = "flex";
+            };
+
+            closeModalBtn.onclick = () => {
+                addTruckModal.style.display = "none";
+                formMessage.textContent = '';
+                addTruckForm.reset(); // Limpiar el formulario al cerrar
+            };
+
+            window.onclick = (event) => {
+                if (event.target == addTruckModal) {
+                    addTruckModal.style.display = "none";
+                    formMessage.textContent = '';
+                    addTruckForm.reset();
+                }
+            };
+
+            // Lógica del Formulario
+            addTruckForm.onsubmit = async (event) => {
+                event.preventDefault();
+                formMessage.textContent = 'Registrando camión...';
+                formMessage.className = 'mt-4 text-center text-gray-400';
+
+                const formData = new FormData(addTruckForm);
+                const truckData = Object.fromEntries(formData.entries());
+
+                // Convertir año y kilometraje a números
+                truckData.anio = parseInt(truckData.anio);
+                truckData.kilometraje = parseInt(truckData.kilometraje);
+
+                try {
+                    const response = await fetch('http://127.0.0.1:5000/camiones', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(truckData),
+                    });
+                    
+                    const result = await response.json();
+
+                    if (!response.ok) {
+                        formMessage.textContent = `Error: ${result.error}`;
+                        formMessage.className = 'mt-4 text-center text-red-500';
+                        throw new Error(result.error);
+                    }
+
+                    formMessage.textContent = result.mensaje;
+                    formMessage.className = 'mt-4 text-center text-green-500';
+
+                    // Volver a cargar la lista de camiones para ver el nuevo
+                    setTimeout(() => {
+                        addTruckModal.style.display = "none";
+                        addTruckForm.reset();
+                        fetchTrucks();
+                    }, 1500);
+
+                } catch (error) {
+                    formMessage.textContent = `Error: No se pudo conectar con el servidor.`;
+                    formMessage.className = 'mt-4 text-center text-red-500';
+                    console.error('Error submitting form:', error);
+                }
+            };
+        });
+    </script>
+</body>
+</html>

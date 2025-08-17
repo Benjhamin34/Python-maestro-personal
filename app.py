@@ -2,8 +2,10 @@
 from flask import Flask, jsonify, request
 from camion import Camion, Reparacion
 from data_manager import cargar_inventario, guardar_inventario
+from flask_cors import CORS # Importamos la biblioteca CORS
 
 app = Flask(__name__)
+CORS(app) # Aplicamos CORS a toda la aplicación
 
 # Cargamos el inventario una sola vez al iniciar la app
 camiones_del_taller = cargar_inventario()
@@ -115,7 +117,17 @@ def registrar_reparacion(placa):
 
     return jsonify({"mensaje": f"Reparación para el camión {placa} registrada exitosamente"}), 201
 
+# RUTA PARA OBTENER TODAS LAS REPARACIONES DE UN CAMIÓN ESPECÍFICO
+@app.route('/camiones/<string:placa>/reparaciones', methods=['GET'])
+def obtener_reparaciones(placa):
+    camion = camiones_del_taller.get(placa)
+    if not camion:
+        return jsonify({"error": f"No se encontró un camión con la placa {placa}"}), 404
+    
+    reparaciones_dict = [rep.to_dict() for rep in camion.reparaciones]
+    
+    return jsonify(reparaciones_dict)
+
 
 if __name__ == '__main__':
     app.run(debug=True)
-
