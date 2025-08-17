@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+ <html lang="es">
+ <head>
+     <meta charset="UTF-8">
+     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+     <title>Taller Heavy Duty | Panel de Control</title>
+     <script src="https://cdn.tailwindcss.com"></script>
+     <link rel="preconnect" href="https://fonts.googleapis.com">
+     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+     <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
+     <style>
+         /* Estilo base para el cuerpo */
+         body {
+             font-family: 'Roboto Mono', monospace;
+             background-color: #f9f9f9; /* Fondo claro */
+             color: #333; /* Texto oscuro */
+         }
+         /* Estilo del header */
+         header {
+             background-color: #041E42; /* Azul Scania */
+             color: #fff;
+         }
+         /* Estilo del hero section */
+         .hero {
+             background-image: url('ruta-de-tu-imagen-de-camion.jpg'); /* Reemplaza con tu imagen */
+             background-size: cover;
+             background-position: center;
+             height: 300px; /* Ajusta la altura según necesites */
+             display: flex;
+             align-items: center;
+             justify-content: center;
+             color: #fff;
+             text-align: center;
+         }
+         .hero-overlay {
+             background-color: rgba(0, 0, 0, 0.5); /* Overlay oscuro para mejor contraste del texto */
+             position: absolute;
+             top: 0;
+             left: 0;
+             width: 100%;
+             height: 100%;
+         }
+         .hero-content {
+             position: relative;
+             z-index: 1;
+         }
+         /* Estilo de los paneles */
+         .content-section {
+             padding: 4rem 0;
+         }
+         .glass-panel {
+             background-color: rgba(0, 30, 66, 0.05); /* Azul Scania con baja opacidad */
+             backdrop-filter: blur(10px);
+             border-radius: 0.5rem;
+             border: 1px solid rgba(0, 30, 66, 0.1);
+             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+         }
+         /* Estilo de los botones */
+         .btn-primary {
+             transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
+             background-color: #007bff; /* Un azul más moderno */
+             color: #fff;
+             border: none;
+             padding: 0.75rem 1.5rem;
+             border-radius: 0.25rem;
+             cursor: pointer;
+         }
+         .btn-primary:hover {
+             background-color: #0056b3;
+         }
+         /* Estilo del modal */
+         .modal {
+             display: none; /* Oculto por defecto */
+             position: fixed;
+             z-index: 1000;
+             left: 0;
+             top: 0;
+             width: 100%;
+             height: 100%;
+             overflow: auto;
+             background-color: rgba(0, 0, 0, 0.4); /* Fondo oscuro semitransparente */
+             align-items: center;
+             justify-content: center;
+         }
+         .modal-content {
+             background-color: #fff;
+             padding: 1.5rem;
+             border-radius: 0.5rem;
+             width: 80%;
+             max-width: 500px;
+             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+             color: #333;
+         }
+         .close-btn {
+             color: #aaa;
+             float: right;
+             font-size: 28px;
+             font-weight: bold;
+         }
+         .close-btn:hover,
+         .close-btn:focus {
+             color: #000;
+             text-decoration: none;
+             cursor: pointer;
+         }
+         /* Estilo del footer */
+         footer {
+             background-color: #333;
+             color: #f9f9f9;
+             padding: 1rem 0;
+             text-align: center;
+         }
+     </style>
+ </head>
+ <body class="bg-gray-100">
+ 
+     <header class="py-4 px-6">
+         <div class="container mx-auto flex justify-between items-center">
+             <h1 class="text-xl font-bold tracking-wider">TALLER HEAVY DUTY</h1>
+             <nav class="space-x-4">
+                 <a href="#" class="text-gray-300 hover:text-white transition-colors">Camiones</a>
+                 <a href="#" class="text-gray-300 hover:text-white transition-colors">Reparaciones</a>
+             </nav>
+         </div>
+     </header>
+ 
+     <div class="hero relative">
+         <div class="hero-overlay"></div>
+         <div class="container mx-auto hero-content">
+             <h2 class="text-3xl font-bold mb-4">Gestión Profesional para tu Flota de Camiones</h2>
+             <p class="text-lg">Optimiza el mantenimiento y la operatividad de tus vehículos pesados.</p>
+             <button id="addTruckBtnHero" class="btn-primary mt-6">Registrar Nuevo Camión</button>
+         </div>
+     </div>
+ 
+     <main class="container mx-auto mt-8 p-4">
+         <section class="content-section">
+             <h2 class="text-2xl font-semibold mb-6 text-center">Panel de Control de Camiones</h2>
+             <div id="trucksList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                 <p class="text-center text-gray-500 col-span-full" id="loadingMessage">Cargando camiones...</p>
+             </div>
+             <div class="mt-6 text-center">
+                 <button id="addTruckBtnMain" class="btn-primary">+ Nuevo Camión</button>
+             </div>
+         </section>
+     </main>
+ 
+     <div id="addTruckModal" class="modal">
+         <div class="modal-content">
+             <span class="close-btn">&times;</span>
+             <h3 class="text-xl font-bold mb-4">Registrar Nuevo Camión</h3>
+             <form id="addTruckForm" class="space-y-4">
+                 <div>
+                     <label for="placa" class="block text-sm font-bold mb-1">Placa</label>
+                     <input type="text" id="placa" name="placa" class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                 </div>
+                 <div>
+                     <label for="marca" class="block text-sm font-bold mb-1">Marca</label>
+                     <input type="text" id="marca" name="marca" class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                 </div>
+                 <div>
+                     <label for="modelo" class="block text-sm font-bold mb-1">Modelo</label>
+                     <input type="text" id="modelo" name="modelo" class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                 </div>
+                 <div>
+                     <label for="anio" class="block text-sm font-bold mb-1">Año</label>
+                     <input type="number" id="anio" name="anio" class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                 </div>
+                 <div>
+                     <label for="propietario" class="block text-sm font-bold mb-1">Propietario</label>
+                     <input type="text" id="propietario" name="propietario" class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                 </div>
+                 <div>
+                     <label for="chofer" class="block text-sm font-bold mb-1">Chofer</label>
+                     <input type="text" id="chofer" name="chofer" class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                 </div>
+                 <div>
+                     <label for="kilometraje" class="block text-sm font-bold mb-1">Kilometraje</label>
+                     <input type="number" id="kilometraje" name="kilometraje" class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                 </div>
+                 <div class="mt-4 text-right">
+                     <button type="submit" class="btn-primary">Registrar</button>
+                 </div>
+             </form>
+             <p id="formMessage" class="mt-4 text-center text-sm"></p>
+         </div>
+     </div>
+ 
+     <footer class="py-4">
+         <div class="container mx-auto text-center text-gray-400 text-sm">
+             &copy; 2024 Taller Heavy Duty. Todos los derechos reservados.
+         </div>
+     </footer>
+ 
+     <script>
+         document.addEventListener('DOMContentLoaded', () => {
+             const trucksListContainer = document.getElementById('trucksList');
+             const loadingMessage = document.getElementById('loadingMessage');
+             const addTruckBtnHero = document.getElementById('addTruckBtnHero');
+             const addTruckBtnMain = document.getElementById('addTruckBtnMain');
+             const addTruckModal = document.getElementById('addTruckModal');
+             const closeModalBtn = document.querySelector('.close-btn');
+             const addTruckForm = document.getElementById('addTruckForm');
+             const formMessage = document.getElementById('formMessage');
+ 
+             const fetchTrucks = async () => {
+                 loadingMessage.textContent = 'Cargando camiones...';
+                 try {
+                     const response = await fetch('http://127.0.0.1:5000/camiones');
+                     if (!response.ok) {
+                         throw new Error(`Error en la petición: ${response.statusText}`);
+                     }
+                     const camiones = await response.json();
+                     displayTrucks(camiones);
+                 } catch (error) {
+                     loadingMessage.textContent = 'Error al cargar los camiones. Asegúrese de que el servidor está funcionando.';
+                     console.error('Error fetching trucks:', error);
+                 }
+             };
+ 
+             const displayTrucks = (camiones) => {
+                 trucksListContainer.innerHTML = '';
+                 if (camiones.length === 0) {
+                     trucksListContainer.innerHTML = '<p class="text-center text-gray-500 col-span-full">No hay camiones registrados.</p>';
+                 } else {
+                     camiones.forEach(camion => {
+                         const truckCard = document.createElement('div');
+                         truckCard.className = 'glass-panel p-4 mb-4';
+                         truckCard.innerHTML = `
+                             <h3 class="text-lg font-semibold mb-2">PLACA: ${camion.placa}</h3>
+                             <p class="text-gray-600 text-sm"><strong>Marca:</strong> ${camion.marca}</p>
+                             <p class="text-gray-600 text-sm"><strong>Modelo:</strong> ${camion.modelo}</p>
+                             <p class="text-gray-600 text-sm"><strong>Propietario:</strong> ${camion.propietario}</p>
+                             <div class="mt-2 space-x-2">
+                                 <button class="text-blue-500 hover:underline focus:outline-none text-sm">Editar</button>
+                                 <button class="text-red-500 hover:underline focus:outline-none text-sm">Eliminar</button>
+                                 <a href="#" class="text-gray-700 hover:underline focus:outline-none text-sm">Detalles</a>
+                             </div>
+                         `;
+                         trucksListContainer.appendChild(truckCard);
+                     });
+                 }
+             };
+ 
+             const openModal = () => {
+                 addTruckModal.style.display = "flex";
+             };
+ 
+             const closeModal = () => {
+                 addTruckModal.style.display = "none";
+                 formMessage.textContent = '';
+                 addTruckForm.reset();
+             };
+ 
+             addTruckBtnHero.onclick = openModal;
+             addTruckBtnMain.onclick = openModal;
+             closeModalBtn.onclick = closeModal;
+ 
+             window.onclick = (event) => {
+                 if (event.target == addTruckModal) {
+                     closeModal();
+                 }
+             };
+ 
+             addTruckForm.onsubmit = async (event) => {
+                 event.preventDefault();
+                 formMessage.textContent = 'Registrando camión...';
+                 formMessage.className = 'mt-4 text-center text-gray-500';
+ 
+                 const formData = new FormData(addTruckForm);
+                 const truckData = Object.fromEntries(formData.entries());
+ 
+                 truckData.anio = parseInt(truckData.anio);
+                 truckData.kilometraje = parseInt(truckData.kilometraje);
+ 
+                 try {
+                     const response = await fetch('http://127.0.0.1:5000/camiones', {
+                         method: 'POST',
+                         headers: {
+                             'Content-Type': 'application/json',
+                         },
+                         body: JSON.stringify(truckData),
+                     });
+                     const result = await response.json();
+ 
+                     if (!response.ok) {
+                         formMessage.textContent = `Error: ${result.error}`;
+                         formMessage.className = 'mt-4 text-center text-red-500';
+                         throw new Error(result.error);
+                     }
+ 
+                     formMessage.textContent = result.mensaje;
+                     formMessage.className = 'mt-4 text-center text-green-500';
+ 
+                     setTimeout(() => {
+                         closeModal();
+                         fetchTrucks();
+                     }, 1500);
+ 
+                 } catch (error) {
+                     formMessage.textContent = `Error: No se pudo conectar con el servidor.`;
+                     formMessage.className = 'mt-4 text-center text-red-500';
+                     console.error('Error submitting form:', error);
+                 }
+             };
+ 
+             fetchTrucks();
+         });
+     </script>
+ </body>
+ </html>
+ 

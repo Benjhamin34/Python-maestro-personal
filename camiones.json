@@ -80,5 +80,15 @@
         "placa": "OPQ-789",
         "kilometraje": 50000,
         "reparaciones": []
+    },
+    "ABC-223": {
+        "marca": "VOLVO",
+        "modelo": "FH22",
+        "anio": 2023,
+        "propietario": "Samuel Doria.",
+        "chofer": "Miguel V.",
+        "placa": "ABC-223",
+        "kilometraje": 20333,
+        "reparaciones": []
     }
 }
